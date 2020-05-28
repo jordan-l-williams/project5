@@ -209,10 +209,8 @@ private:
     // possibility is a std::map where the keys are vertex numbers
     // and the values are DigraphVertex<VertexInfo, EdgeInfo> objects.
 
-    std::map< int, DigraphVertex<VertexInfo, EdgeInfo> > list; 
-  //  typename std::map< int, DigraphVertex<VertexInfo, EdgeInfo> *>::iterator interater;    
+    std::map< int, DigraphVertex<VertexInfo, EdgeInfo> > list;    
     
-
 
 
     // You can also feel free to add any additional member functions
