@@ -230,6 +230,8 @@ Digraph<VertexInfo, EdgeInfo>::Digraph()
 }
 
 
+
+
 template <typename VertexInfo, typename EdgeInfo>
 Digraph<VertexInfo, EdgeInfo>::Digraph(const Digraph& d)
 {
