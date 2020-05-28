@@ -219,7 +219,6 @@ private:
 };
 
 
-
 // You'll need to implement the member functions below.  There's enough
 // code in place to make them compile, but they'll all need to do the
 // correct thing instead.
@@ -298,10 +297,15 @@ EdgeInfo Digraph<VertexInfo, EdgeInfo>::edgeInfo(int fromVertex, int toVertex) c
         throw(DigraphException("A key already exists"));
     }
     else{
-        DigraphEdge<EdgeInfo> temp = list.at(fromVertex).edges.front() ;
-        return temp.einfo;
+
+        for(auto interater = list.at(fromVertex).edges.begin(); interater != list.at(fromVertex).edges.end(); interater++){
+            if(interater->fromVertex == fromVertex && interater->toVertex == toVertex){
+                return interater->einfo;
+            }
+        }
+
+        throw(DigraphException("A key already exists"));
     }    
-    return EdgeInfo{};
 }
 
 
