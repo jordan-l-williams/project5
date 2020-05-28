@@ -232,12 +232,19 @@ Digraph<VertexInfo, EdgeInfo>::Digraph()
 template <typename VertexInfo, typename EdgeInfo>
 Digraph<VertexInfo, EdgeInfo>::Digraph(const Digraph& d)
 {
+    for(auto iterator = d.list.begin(); iterator != d.list.end(); iterator++){
+        list[iterator->first].vinfo = iterator->second.vinfo;
+        for(auto iteratorEdges = iterator->second.edges.begin();iteratorEdges != iterator->second.edges.end(); iteratorEdges++){            
+            list.at(iterator->first).edges.push_back(*iteratorEdges);
+        }
+    }
 }
 
 
 template <typename VertexInfo, typename EdgeInfo>
 Digraph<VertexInfo, EdgeInfo>::Digraph(Digraph&& d) noexcept
 {
+    list.swap(d.list);
 }
 
 
@@ -250,6 +257,7 @@ Digraph<VertexInfo, EdgeInfo>::~Digraph() noexcept
 template <typename VertexInfo, typename EdgeInfo>
 Digraph<VertexInfo, EdgeInfo>& Digraph<VertexInfo, EdgeInfo>::operator=(const Digraph& d)
 {
+    list.clear(); 
     return *this;
 }
 
@@ -257,6 +265,7 @@ Digraph<VertexInfo, EdgeInfo>& Digraph<VertexInfo, EdgeInfo>::operator=(const Di
 template <typename VertexInfo, typename EdgeInfo>
 Digraph<VertexInfo, EdgeInfo>& Digraph<VertexInfo, EdgeInfo>::operator=(Digraph&& d) noexcept
 {
+    this->list.swap(d.list);
     return *this;
 }
 
@@ -264,7 +273,12 @@ Digraph<VertexInfo, EdgeInfo>& Digraph<VertexInfo, EdgeInfo>::operator=(Digraph&
 template <typename VertexInfo, typename EdgeInfo>
 std::vector<int> Digraph<VertexInfo, EdgeInfo>::vertices() const
 {
-    return std::vector<int>{};
+    std::vector<int> temp;
+
+    for(auto iterator = list.begin(); iterator != list.end(); iterator++){
+        temp.push_back(iterator->first);
+    }
+    return temp;
 }
 
 
@@ -396,21 +410,40 @@ void Digraph<VertexInfo, EdgeInfo>::removeEdge(int fromVertex, int toVertex)
 template <typename VertexInfo, typename EdgeInfo>
 int Digraph<VertexInfo, EdgeInfo>::vertexCount() const noexcept
 {
-    return 0;
+    return list.size();
 }
 
 
 template <typename VertexInfo, typename EdgeInfo>
 int Digraph<VertexInfo, EdgeInfo>::edgeCount() const noexcept
 {
-    return 0;
+    int count = 0;
+    for(auto iteratorList = list.begin(); iteratorList != list.end(); iteratorList++ ){
+        for(auto iteratorEdge = iteratorList->second.edges.begin(); iteratorEdge != iteratorList->second.edges.end() ; iteratorEdge++){
+            count += 1;
+        }
+    }
+
+    return count;
 }
 
 
 template <typename VertexInfo, typename EdgeInfo>
 int Digraph<VertexInfo, EdgeInfo>::edgeCount(int vertex) const
 {
-    return 0;
+    int count = 0;
+    if(list.find(vertex) == list.end()){
+        //Did not find key
+        throw(DigraphException("did not find the key"));
+    }   
+    else{
+        
+        for(auto iterate = list.begin(); iterate != list.end(); iterate++){
+            count+= iterate->second.edges.size();
+        }
+      
+    }
+    return count;
 }
 
 
