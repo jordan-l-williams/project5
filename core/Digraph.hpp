@@ -271,21 +271,51 @@ std::vector<int> Digraph<VertexInfo, EdgeInfo>::vertices() const
 template <typename VertexInfo, typename EdgeInfo>
 std::vector<std::pair<int, int>> Digraph<VertexInfo, EdgeInfo>::edges() const
 {
-    return std::vector<std::pair<int, int>>{};
+    std::vector<std::pair<int, int>> temp;
+
+    for(auto iteratorList = list.begin(); iteratorList != list.end(); iteratorList++ ){
+         for(auto iteratorEdge = iteratorList->second.edges.begin(); iteratorEdge != iteratorList->second.edges.end() ; iteratorEdge++){
+            std::pair<int , int> myPair;
+            myPair.first = iteratorEdge->fromVertex;
+            myPair.second = iteratorEdge->toVertex;
+            temp.push_back(myPair);
+         }
+    }
+    return temp;
 }
 
 
 template <typename VertexInfo, typename EdgeInfo>
 std::vector<std::pair<int, int>> Digraph<VertexInfo, EdgeInfo>::edges(int vertex) const
 {
-    return std::vector<std::pair<int, int>>{};
+    if(list.find(vertex) == list.end()){
+        //did not find key
+        throw(DigraphException("A key already exists"));
+    }
+    else{
+        std::vector<std::pair<int, int>> temp;
+        for(auto iterater = list.at(vertex).edges.begin(); iterater != list.at(vertex).edges.end(); iterater++  ){
+            std::pair<int , int> myPair;
+            myPair.first = iterater->fromVertex;
+            myPair.second = iterater->toVertex;
+            temp.push_back(myPair);
+        }
+        return temp;
+    }
+   
 }
 
 
 template <typename VertexInfo, typename EdgeInfo>
 VertexInfo Digraph<VertexInfo, EdgeInfo>::vertexInfo(int vertex) const
 {
-    return VertexInfo{};
+    if(list.find(vertex) == list.end()){
+        //did not find key
+        throw(DigraphException("A key already exists"));
+    }
+    else{
+        return list.at(vertex).vinfo;
+    }
 }
 
 
