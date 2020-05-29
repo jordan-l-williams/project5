@@ -462,43 +462,18 @@ template <typename VertexInfo, typename EdgeInfo>
 int Digraph<VertexInfo, EdgeInfo>::edgeCount(int vertex) const
 {
     int count = 0;
-    if(list.find(vertex) == list.end()){
+    auto iter =list.find(vertex);
+    if(iter == list.end()){
         //Did not find key
         throw DigraphException("did not find the key");
     }   
-    else{
-        
-        for(auto iterate = list.begin(); iterate != list.end(); iterate++){
-            count+= iterate->second.edges.size();
-        }
-      
+    else{  
+        count = iter->second.edges.size();
     }
     return count;
     
 }
 
-// template <typename VertexInfo, typename EdgeInfo> 
-// bool  Digraph<VertexInfo, EdgeInfo>::mytest(int numberOfVertexs,std::vector<int> array ,int iterator ) const{
-//     if(array.size() == 0){
-//         array.push_back(iterator)
-//     }
-    
-//     for(int x = 0; x < array.size(); x++){
-//         if(iterator == array.at(x)){
-//             break;
-//         }
-//         if(x == array.size()-1){
-//             array.push_back(iterator);
-//         }
-//     }
-
-//     for(auto iterate2 = list.begin(); iterate2 != list.end(); iterate2++){
-//         mytest(numberOfVertexs , array , iterate->second.ed)
-//     }
-    
-
-//     return true;
-// }
 template <typename VertexInfo, typename EdgeInfo> 
 bool Digraph<VertexInfo, EdgeInfo>::DFTr(int x ,std::map<int , bool> myArray )const{
     myArray.at(x) = true;
@@ -515,10 +490,6 @@ bool Digraph<VertexInfo, EdgeInfo>::DFTr(int x ,std::map<int , bool> myArray )co
         return true;
     }
 
-  //  auto temp = list.find(myArray.at(x).vertex);
-
-    // for(auto i = temp.second.edges.begin(); i != temp.second.edges.end(); i++ ){
-
     auto iter = list.find(x);
 
         for(auto iterEdge = iter->second.edges.begin(); iterEdge != iter->second.edges.end(); iterEdge++){
@@ -529,8 +500,6 @@ bool Digraph<VertexInfo, EdgeInfo>::DFTr(int x ,std::map<int , bool> myArray )co
                     break;
             }
         }
-
-    // }
     return result;
 }
 
@@ -550,9 +519,7 @@ bool Digraph<VertexInfo, EdgeInfo>::DFT()const{
                 return false;
             }
         }
-
     }
-
     return result;
 };
 
@@ -566,13 +533,7 @@ bool Digraph<VertexInfo, EdgeInfo>::isStronglyConnected() const
     if(list.size() < 1){
         return false;
     }
- 
     bool isConnected =  Digraph<VertexInfo, EdgeInfo>::DFT ( );
-
-
-     
-
-    
     return isConnected;
 }
 
