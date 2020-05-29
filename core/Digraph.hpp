@@ -30,6 +30,10 @@
 
 
 
+
+
+
+
 // DigraphExceptions are thrown from some of the member functions in the
 // Digraph class template, so that exception is declared here, so it
 // will be available to any code that includes this header file.
@@ -184,6 +188,8 @@ public:
     // thrown instead.
     int edgeCount(int vertex) const;
 
+    
+    bool  mytest(int numberOfVertexs,std::vector<int> array ,int iterator ) const;
     // isStronglyConnected() returns true if the Digraph is strongly
     // connected (i.e., every vertex is reachable from every other),
     // false otherwise.
@@ -203,6 +209,15 @@ public:
         int startVertex,
         std::function<double(const EdgeInfo&)> edgeWeightFunc) const;
 
+    struct vertexArray{
+        int vertex;
+        bool visited;
+    };
+    bool DFT()const;
+
+    bool DFTr(int x ,std::map<int , bool> myArray )const;
+
+    
 
 private:
     // Add whatever member variables you think you need here.  One
@@ -211,6 +226,7 @@ private:
 
     std::map< int, DigraphVertex<VertexInfo, EdgeInfo> > list;    
     
+
 
 
     // You can also feel free to add any additional member functions
@@ -232,12 +248,7 @@ Digraph<VertexInfo, EdgeInfo>::Digraph()
 template <typename VertexInfo, typename EdgeInfo>
 Digraph<VertexInfo, EdgeInfo>::Digraph(const Digraph& d)
 {
-    for(auto iterator = d.list.begin(); iterator != d.list.end(); iterator++){
-        list[iterator->first].vinfo = iterator->second.vinfo;
-        for(auto iteratorEdges = iterator->second.edges.begin();iteratorEdges != iterator->second.edges.end(); iteratorEdges++){            
-            list.at(iterator->first).edges.push_back(*iteratorEdges);
-        }
-    }
+    list = d.list;
 }
 
 
@@ -257,7 +268,7 @@ Digraph<VertexInfo, EdgeInfo>::~Digraph() noexcept
 template <typename VertexInfo, typename EdgeInfo>
 Digraph<VertexInfo, EdgeInfo>& Digraph<VertexInfo, EdgeInfo>::operator=(const Digraph& d)
 {
-    list.clear(); 
+    list = d.list;
     return *this;
 }
 
@@ -304,7 +315,7 @@ std::vector<std::pair<int, int>> Digraph<VertexInfo, EdgeInfo>::edges(int vertex
 {
     if(list.find(vertex) == list.end()){
         //did not find key
-        throw(DigraphException("A key already exists"));
+        throw DigraphException("A key already exists");
     }
     else{
         std::vector<std::pair<int, int>> temp;
@@ -325,7 +336,7 @@ VertexInfo Digraph<VertexInfo, EdgeInfo>::vertexInfo(int vertex) const
 {
     if(list.find(vertex) == list.end()){
         //did not find key
-        throw(DigraphException("A key already exists"));
+        throw DigraphException("A key already exists");
     }
     else{
         return list.at(vertex).vinfo;
@@ -338,7 +349,7 @@ EdgeInfo Digraph<VertexInfo, EdgeInfo>::edgeInfo(int fromVertex, int toVertex) c
 {
     if(list.find(fromVertex) == list.end()){
         //did not find key
-        throw(DigraphException("A key already exists"));
+        throw DigraphException("A key already exists");
     }
     else{
 
@@ -348,7 +359,7 @@ EdgeInfo Digraph<VertexInfo, EdgeInfo>::edgeInfo(int fromVertex, int toVertex) c
             }
         }
 
-        throw(DigraphException("A key already exists"));
+        throw DigraphException("A key already exists");
     }    
 }
 
@@ -361,7 +372,7 @@ void Digraph<VertexInfo, EdgeInfo>::addVertex(int vertex, const VertexInfo& vinf
         list[vertex].vinfo = vinfo;
     }
     else{
-        throw(DigraphException("A key already exists"));
+        throw DigraphException("A key already exists") ;
     }
 }
 
@@ -371,15 +382,13 @@ void Digraph<VertexInfo, EdgeInfo>::addEdge(int fromVertex, int toVertex, const 
 {
     if(list.find(fromVertex) == list.end()){
         //Did not find key
-        throw(DigraphException("did not find the key"));
+        throw DigraphException("did not find the key");
     }   
     else{
 
-        typename std::list<DigraphEdge<EdgeInfo>>::iterator  interate;
-
-        for(interate = list[fromVertex].edges.begin(); interate != list[fromVertex].edges.end(); interate++){
+        for(auto interate = list[fromVertex].edges.begin(); interate != list[fromVertex].edges.end(); interate++){
             if(interate->fromVertex == fromVertex && interate->toVertex == toVertex){
-                throw(DigraphException("the Edge info was already inserted into the graph"));
+                throw DigraphException("the Edge info was already inserted into the graph");
                 return;
             }
         }
@@ -397,13 +406,34 @@ void Digraph<VertexInfo, EdgeInfo>::addEdge(int fromVertex, int toVertex, const 
 template <typename VertexInfo, typename EdgeInfo>
 void Digraph<VertexInfo, EdgeInfo>::removeVertex(int vertex)
 {
-
+    auto iter = list.find(vertex);
+    if(iter == list.end()){
+        //Did not find key
+        throw DigraphException("did not find the key");
+    }   
+    else{
+        list.erase(iter);     
+    }
 }
 
 
 template <typename VertexInfo, typename EdgeInfo>
 void Digraph<VertexInfo, EdgeInfo>::removeEdge(int fromVertex, int toVertex)
 {
+    auto iter = list.find(fromVertex);
+    if(iter == list.end()){
+        //Did not find key
+        throw DigraphException("did not find the key");
+    }   
+    else{
+        for(auto iterEdge = iter->second.edges.begin(); iterEdge != iter->second.edges.end(); iterEdge++){
+            if(iterEdge->fromVertex == fromVertex && iterEdge->toVertex == toVertex){
+                iter->second.edges.erase(iterEdge);
+                return;
+            }
+        }
+        throw DigraphException("did not find the key");        
+    }
 }
 
 
@@ -434,7 +464,7 @@ int Digraph<VertexInfo, EdgeInfo>::edgeCount(int vertex) const
     int count = 0;
     if(list.find(vertex) == list.end()){
         //Did not find key
-        throw(DigraphException("did not find the key"));
+        throw DigraphException("did not find the key");
     }   
     else{
         
@@ -444,14 +474,111 @@ int Digraph<VertexInfo, EdgeInfo>::edgeCount(int vertex) const
       
     }
     return count;
+    
 }
+
+// template <typename VertexInfo, typename EdgeInfo> 
+// bool  Digraph<VertexInfo, EdgeInfo>::mytest(int numberOfVertexs,std::vector<int> array ,int iterator ) const{
+//     if(array.size() == 0){
+//         array.push_back(iterator)
+//     }
+    
+//     for(int x = 0; x < array.size(); x++){
+//         if(iterator == array.at(x)){
+//             break;
+//         }
+//         if(x == array.size()-1){
+//             array.push_back(iterator);
+//         }
+//     }
+
+//     for(auto iterate2 = list.begin(); iterate2 != list.end(); iterate2++){
+//         mytest(numberOfVertexs , array , iterate->second.ed)
+//     }
+    
+
+//     return true;
+// }
+template <typename VertexInfo, typename EdgeInfo> 
+bool Digraph<VertexInfo, EdgeInfo>::DFTr(int x ,std::map<int , bool> myArray )const{
+    myArray.at(x) = true;
+
+    bool result = false;
+    int count = 0;
+    for(auto i = myArray.begin(); i != myArray.end(); i++){
+        if(i->second == true){
+            count +=1;
+        }
+    }
+
+    if(count == myArray.size()){
+        return true;
+    }
+
+  //  auto temp = list.find(myArray.at(x).vertex);
+
+    // for(auto i = temp.second.edges.begin(); i != temp.second.edges.end(); i++ ){
+
+    auto iter = list.find(x);
+
+        for(auto iterEdge = iter->second.edges.begin(); iterEdge != iter->second.edges.end(); iterEdge++){
+            if(myArray.at(iterEdge->toVertex) == false){
+               result = DFTr(iterEdge->toVertex , myArray);
+
+               if(result == true)
+                    break;
+            }
+        }
+
+    // }
+    return result;
+}
+
+template <typename VertexInfo, typename EdgeInfo> 
+bool Digraph<VertexInfo, EdgeInfo>::DFT()const{
+    //vertexArray
+    bool result = false;
+    std::map<int , bool> myArray;
+    for(auto iter = list.begin() ;iter != list.end(); iter++ ){
+        myArray[iter->first] = false;
+    }
+
+    for(auto i = myArray.begin(); i != myArray.end(); i++){
+        if(i->second == false){
+            result = DFTr(i->first , myArray);
+            if(result == false){
+                return false;
+            }
+        }
+
+    }
+
+    return result;
+};
+
+ 
+
 
 
 template <typename VertexInfo, typename EdgeInfo>
 bool Digraph<VertexInfo, EdgeInfo>::isStronglyConnected() const
 {
-    return false;
+    if(list.size() < 1){
+        return false;
+    }
+ 
+    bool isConnected =  Digraph<VertexInfo, EdgeInfo>::DFT ( );
+
+
+     
+
+    
+    return isConnected;
 }
+
+
+
+
 
 
 template <typename VertexInfo, typename EdgeInfo>
