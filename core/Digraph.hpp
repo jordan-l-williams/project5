@@ -27,7 +27,8 @@
 #include <utility>
 #include <vector>
 #include <string>
-
+#include <queue>
+#include <limits>
 
 
 
@@ -209,10 +210,8 @@ public:
         int startVertex,
         std::function<double(const EdgeInfo&)> edgeWeightFunc) const;
 
-    struct vertexArray{
-        int vertex;
-        bool visited;
-    };
+
+    using EdgeFunction = std::function<double(const EdgeInfo&)>;
     bool DFT()const;
 
     bool DFTr(int x ,std::map<int , bool> myArray )const;
@@ -224,8 +223,18 @@ private:
     // possibility is a std::map where the keys are vertex numbers
     // and the values are DigraphVertex<VertexInfo, EdgeInfo> objects.
 
-    std::map< int, DigraphVertex<VertexInfo, EdgeInfo> > list;    
+    std::map< int, DigraphVertex<VertexInfo, EdgeInfo> > list;  
+
+    struct Nodes{
+        int Vertex;
+        bool known;
+        int distance;
+        std::string prevVertex;
+
+    };    
+
     
+
 
 
 
@@ -547,6 +556,71 @@ std::map<int, int> Digraph<VertexInfo, EdgeInfo>::findShortestPaths(
     int startVertex,
     std::function<double(const EdgeInfo&)> edgeWeightFunc) const
 {
+  
+
+    
+    std::priority_queue<Nodes , std::map<int , Nodes>, std::greater<int>> myQueue;
+    std::map<int , Nodes> vectorNodes;
+
+    for(auto iter =list.begin();iter!= list.end(); iter++){
+        Nodes temp;
+        if(iter->first == startVertex){
+            temp[iter->first].distance =  0;
+            temp[iter->first].prevVertex = "none" ;
+            temp[iter->first].vertex = iter->first;
+            temp[iter->first].known = false;
+            vectorNodes.push_back(temp);
+            myQueue.push(temp);
+        }
+        else{
+            temp[iter->first].distance = std::numeric_limits<int>::infinity;
+            temp[iter->first].prevVertex =  "unkown";
+            temp[iter->first].vertex = iter->first;
+            temp[iter->first].known = false;
+            vectorNodes.push_back(temp);
+        }
+     
+    }
+
+    
+
+    while(myQueue.size > 0){
+        Nodes myTemp = myQueue.pop;
+
+        if(myTemp.known == false){
+
+            myTemp.known = true;
+
+            std::vector<DigraphEdge<EdgeInfo>> edgesNodes;
+        
+
+            // now i have all the edges for myTemp
+            for(int x = 0 ; x < list[myTemp.vertex].edges.size(); x++){
+                edgesNodes.push_back(list[myTemp.vertex].edge.at(x));
+            }
+
+            for(int x = 0; x < edgesNodes.size(); x++){
+                if (          myTemp.distance  +   )
+
+                if(edgesNodes.at(x) )
+            }
+
+            // for(int x = 0 ; x < edgesNodes; x++){
+            //     if()
+            // }
+            // if (temp[list[myTemp.vertex].toVertex].distance > (myTemp.distance + edgeWeightFunc(list[myTemp.vertex].edges.at(0)))){
+            //         temp[list[myTemp.vertex].toVertex].distance = (myTemp.distance + edgeWeightFunc(list[myTemp.vertex].edges.at(0)))
+            //         my 
+               
+            // }
+        }
+
+    }
+
+        
+        
+
+
     return std::map<int, int>{};
 }
 
