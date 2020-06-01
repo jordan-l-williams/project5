@@ -29,6 +29,10 @@
 #include <string>
 #include <queue>
 #include <limits>
+#include <cstdlib>
+#include <stdio.h>
+#include <iostream>
+
 
 
 
@@ -209,6 +213,8 @@ public:
     std::map<int, int> findShortestPaths(
         int startVertex,
         std::function<double(const EdgeInfo&)> edgeWeightFunc) const;
+    
+    
 
 
     using EdgeFunction = std::function<double(const EdgeInfo&)>;
@@ -225,15 +231,22 @@ private:
 
     std::map< int, DigraphVertex<VertexInfo, EdgeInfo> > list;  
 
+
+
     struct Nodes{
-        int Vertex;
+        int vertex;
         bool known;
-        int distance;
-        std::string prevVertex;
+        double distance;
+        int prevVertex;
+
 
     };    
 
-    
+    struct compares{
+        bool operator()(Nodes &a , Nodes &b){
+            return a.distance >b.distance;
+        }
+    };   
 
 
 
@@ -556,72 +569,82 @@ std::map<int, int> Digraph<VertexInfo, EdgeInfo>::findShortestPaths(
     int startVertex,
     std::function<double(const EdgeInfo&)> edgeWeightFunc) const
 {
-  
+    auto compare = [](Nodes a, Nodes b  ){return a.distance  > b.distance ;};
 
     
-    std::priority_queue<Nodes , std::map<int , Nodes>, std::greater<int>> myQueue;
-    std::map<int , Nodes> vectorNodes;
+    
+     std::priority_queue<Nodes , std::vector<Nodes> , decltype(compare) >myQueue(compare);
+     std::vector<Nodes>    vectorNodes;
 
     for(auto iter =list.begin();iter!= list.end(); iter++){
         Nodes temp;
         if(iter->first == startVertex){
-            temp[iter->first].distance =  0;
-            temp[iter->first].prevVertex = "none" ;
-            temp[iter->first].vertex = iter->first;
-            temp[iter->first].known = false;
+            temp.distance =  0;
+            temp.prevVertex = -1 ;
+            temp.vertex = iter->first;
+            temp.known = false;
             vectorNodes.push_back(temp);
             myQueue.push(temp);
         }
         else{
-            temp[iter->first].distance = std::numeric_limits<int>::infinity;
-            temp[iter->first].prevVertex =  "unkown";
-            temp[iter->first].vertex = iter->first;
-            temp[iter->first].known = false;
+            temp.distance = std::numeric_limits<double>::infinity();
+            temp.prevVertex =  -1;
+            temp.vertex = iter->first;
+            temp.known = false;
             vectorNodes.push_back(temp);
         }
      
     }
 
-    
+    while(myQueue.size() > 0){
+        Nodes  myTemp = myQueue.top();
 
-    while(myQueue.size > 0){
-        Nodes myTemp = myQueue.pop;
+        myQueue.pop();
 
-        if(myTemp.known == false){
-
-            myTemp.known = true;
-
-            std::vector<DigraphEdge<EdgeInfo>> edgesNodes;
-        
-
-            // now i have all the edges for myTemp
-            for(int x = 0 ; x < list[myTemp.vertex].edges.size(); x++){
-                edgesNodes.push_back(list[myTemp.vertex].edge.at(x));
+        int vectorIndex = 0;
+        for(int x =0; x < vectorNodes.size(); x ++){
+            if(vectorNodes.at(x).vertex == myTemp.vertex){
+                vectorIndex = x;
+                break;
             }
-
-            for(int x = 0; x < edgesNodes.size(); x++){
-                if (          myTemp.distance  +   )
-
-                if(edgesNodes.at(x) )
-            }
-
-            // for(int x = 0 ; x < edgesNodes; x++){
-            //     if()
-            // }
-            // if (temp[list[myTemp.vertex].toVertex].distance > (myTemp.distance + edgeWeightFunc(list[myTemp.vertex].edges.at(0)))){
-            //         temp[list[myTemp.vertex].toVertex].distance = (myTemp.distance + edgeWeightFunc(list[myTemp.vertex].edges.at(0)))
-            //         my 
-               
-            // }
         }
 
+        if(vectorNodes.at(vectorIndex).known == false){
+
+            vectorNodes.at(vectorIndex).known = true;
+
+            for(auto x = list.at(myTemp.vertex).edges.begin();x != list.at(myTemp.vertex).edges.end(); x++){
+
+                int index =0;
+                for(int y = 0; y < vectorNodes.size(); y++){
+                    
+                    if(vectorNodes.at(y).vertex == x->toVertex){
+
+                        index = y;
+                        break;
+                    }
+                }
+
+               if(vectorNodes.at(index).distance > (vectorNodes.at(vectorIndex).distance + edgeWeightFunc(x->einfo)) ){
+                   vectorNodes.at(index).distance = (vectorNodes.at(vectorIndex).distance + edgeWeightFunc(x->einfo)) ;
+    
+                    vectorNodes.at(index).prevVertex = vectorNodes.at(vectorIndex).vertex;
+                    myQueue.push(vectorNodes.at(index));
+               }
+           }
+        }
     }
 
-        
-        
+    std::map<int, int> ret;
+    for(int x = 0; x < vectorNodes.size(); x++){
+        if(vectorNodes.at(x).prevVertex == -1){
+            ret[vectorNodes.at(x).vertex] = vectorNodes.at(x).vertex;
+        }
+        else
+            ret[vectorNodes.at(x).vertex] = vectorNodes.at(x).prevVertex;
+    }
 
-
-    return std::map<int, int>{};
+    return ret;
 }
 
 

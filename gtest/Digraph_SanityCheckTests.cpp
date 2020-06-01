@@ -315,31 +315,31 @@ TEST(Digraph_SanityCheckTests, isStronglyConnectedWhenAllPossibleEdgesArePresent
 }
 
 
-// TEST(Digraph_SanityCheckTests, canFindShortestPathWhenNoChoicesAreToBeMade)
-// {
-//     Digraph<int, double> d1;
-//     d1.addVertex(1, 10);
-//     d1.addVertex(2, 20);
-//     d1.addVertex(3, 30);
+TEST(Digraph_SanityCheckTests, canFindShortestPathWhenNoChoicesAreToBeMade)
+{
+    Digraph<int, double> d1;
+    d1.addVertex(1, 10);
+    d1.addVertex(2, 20);
+    d1.addVertex(3, 30);
 
-//     d1.addEdge(1, 2, 5.0);
-//     d1.addEdge(2, 3, 17.0);
+    d1.addEdge(1, 2, 5.0);
+    d1.addEdge(2, 3, 17.0);
 
-//     std::map<int, int> paths = d1.findShortestPaths(
-//         1,
-//         [](double edgeInfo)
-//         {
-//             return edgeInfo;
-//         });
+    std::map<int, int> paths = d1.findShortestPaths(
+        1,
+        [](double edgeInfo)
+        {
+            return edgeInfo;
+        });
 
-//     ASSERT_EQ(3, paths.size());
+    ASSERT_EQ(3, paths.size());
 
-//     ASSERT_TRUE(paths.find(1) != paths.end());
-//     ASSERT_TRUE(paths.find(2) != paths.end());
-//     ASSERT_TRUE(paths.find(3) != paths.end());
+    ASSERT_TRUE(paths.find(1) != paths.end());
+    ASSERT_TRUE(paths.find(2) != paths.end());
+    ASSERT_TRUE(paths.find(3) != paths.end());
 
-//     ASSERT_EQ(1, paths[1]);
-//     ASSERT_EQ(1, paths[2]);
-//     ASSERT_EQ(2, paths[3]);
-// }
+    ASSERT_EQ(1, paths[1]);
+    ASSERT_EQ(1, paths[2]);
+    ASSERT_EQ(2, paths[3]);
+}
 
